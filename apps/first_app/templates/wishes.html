@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Wishes</title>
+</head>
+<body>  
+    <h1 class="greeting">{{wishes.0.item_id.item}}</h1>
+    <h4 class="greeting logout"><a href="/dashboard">Home</a></h4>
+    <h4 class="greeting logout"><a href="/logout">Logout</h4></a>
+    <hr>
+    <h2>Users who added this item to there wish list:</h2>
+        {% for user in wishes %}
+            <p>{{user.user_id.first_name}}</p>
+</body>
+</html>

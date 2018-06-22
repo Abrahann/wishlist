@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Wish List Item</title>
+         
+
+    </head>
+    <body>
+        <h1 class="greeting">Add new item to wish list</h1 class="greeting logout">
+            <h4 class="greeting logout"><a href="/dashboard">Home</a></h4>
+            <h4 class="greeting logout"><a href="/logout">Logout</a></h4>
+        <hr>
+        
+        <form class="" action="/additem" method="post">
+            <label for="item">Item</label>
+            <input type="text" name="item" value="" maxlength="30">
+            <input type="submit" name="submit" value="Add">
+            {% csrf_token %}
+        </form>
+    </body>
+</html>
