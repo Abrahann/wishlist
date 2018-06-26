@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^additem$', views.additem),
     url(r'^wishes/(?P<id>\d+)$', views.wishes),
     url(r'^logout$', views.logout),
-    url(r'^deleteitem/(?P<id>\d+)$', views.deleteitem),
     url(r'^removeitem/(?P<id>\d+)$', views.removeitem),
+    url(r'^deleteitem/(?P<id>\d+)$', views.deleteitem),
     url(r'^addfromanother/(?P<id>\d+)$', views.addfromanother)
 ]                            

@@ -18,12 +18,20 @@
                 </tr>
             </thead>
             <tbody>
-            {% for wish in wishes %}
+            {% for wish in createdwishes %}
                 <tr>
-                    <td><a href="/wishes/{{wish.item_id.id}}">{{wish.item_id.item}}</a></td>
-                    <td>{{wish.item_id.user_id.first_name}}</td>
-                    <td>{{wish.item_id.created_at|date:"m/d/Y"}}&nbsp&nbsp&nbsp&nbsp&nbsp{{wish.item_id.created_at|date:"g:i a"}}</td>
-                    <td>{% if wish.item_id.user_id.id == request.session.id %}<a href="/deleteitem/{{wish.item_id.id}}">Delete item</a></td>{% else %}<a href="/removeitem/{{wish.item_id.id}}">Remove from list</a>{% endif %}</td>
+                    <td><a href="/wishes/{{wish.id}}">{{wish.name}}</a></td>
+                    <td>{{wish.created.first_name}}</td>
+                    <td>{{wish.created_at|date:"m/d/Y"}}&nbsp&nbsp&nbsp&nbsp&nbsp{{wish.name.created_at|date:"g:i a"}}</td>
+                    <td><a href="/deleteitem/{{wish.id}}">Delete item</a></td>
+                </tr>
+            {% endfor %}
+            {% for wish in likewishes %}
+                <tr>
+                    <td><a href="/wishes/{{wish.id}}">{{wish.name}}</a></td>
+                    <td>{{wish.created.first_name}}</td>
+                    <td>{{wish.created_at|date:"m/d/Y"}}&nbsp&nbsp&nbsp&nbsp&nbsp{{wish.name.created_at|date:"g:i a"}}</td>
+                    <td><a href="/removeitem/{{wish.id}}">Remove from list</a></td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -42,12 +50,12 @@
                 </tr>
             </thead>
             <tbody>
-            {% for wish in allWishes %}
+            {% for wish in otherWishes %}
                 <tr>
-                    <td><a href="/wishes/{{wish.item_id.id}}">{{wish.item_id.item}}</a></td>
-                    <td>{{wish.user_id.first_name}}</td>
-                    <td>{{wish.item_id.created_at|date:"m/d/Y"}}&nbsp&nbsp&nbsp&nbsp&nbsp{{wish.item_id.created_at|date:"g:i a"}}</td>
-                    <td><a href="/addfromanother/{{wish.item_id.id}}">Add to my list</a></td>
+                    <td><a href="/wishes/{{wish.id}}">{{wish.name}} {{wish.id}}</a></td>
+                    <td>{{wish.created.first_name}}</td>
+                    <td>{{wish.created_at|date:"m/d/Y"}}&nbsp&nbsp&nbsp&nbsp&nbsp{{wish.name.created_at|date:"g:i a"}}</td>
+                    <td><a href="/addfromanother/{{wish.id}}">Add to my list</a></td>
                 </tr>
             {% endfor %}
             </tbody>

@@ -15,8 +15,8 @@ class UserManager(models.Manager):
             return (False, "Invalid email address entered.")
         elif not User.objects.filter(email = email):
             return (False, "That email is not registered.")
-        elif User.objects.get(email = email).password != bcrypt.hashpw(encodedPassword, User.objects.get(email = email).password.encode(encoding="utf-8", errors="strict")): 
-            return (False, "Check password and try again.")
+        elif not bcrypt.checkpw(password.encode(), User.objects.get(email=email).password.encode()):
+            return(False,"password doesnt match") 
         else:
             loggedInUser = User.objects.get(email = email)
             return (True, loggedInUser)
@@ -60,14 +60,11 @@ class User(models.Model):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
 
-class Item(models.Model):
-    item = models.CharField(max_length = 50)
-    user_id = models.ForeignKey(User)
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimeField(auto_now = True)
+
 
 class Wish(models.Model):
-    user_id = models.ForeignKey(User)
-    item_id = models.ForeignKey(Item)
+    created = models.ForeignKey(User, related_name='users_wish')
+    users_wishes = models.ManyToManyField(User, related_name='other_people_wish')
+    name = models.CharField(max_length = 50)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)

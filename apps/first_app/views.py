@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import User, Item, Wish
+from .models import *
 from django.contrib import messages
 
 # Create your views here.
@@ -34,9 +34,11 @@ def validate(request):
 def dashboard(request):
     if "id" not in request.session:
         return redirect("/")
-    wishes = Wish.objects.all().filter(user_id = request.session["id"])
-    allWishes = Wish.objects.all().exclude(user_id = request.session["id"])
-    context = {"wishes": wishes, "allWishes": allWishes}
+    user = User.objects.get(id = request.session["id"])
+    otherWishes = Wish.objects.exclude(users_wishes = user).exclude(created = user )
+    createdwishes = Wish.objects.filter(created = user)
+    likewishes = Wish.objects.filter(users_wishes = user)
+    context = {"otherWishes": otherWishes,"createdwishes":createdwishes,"likewishes" : likewishes }
     return render(request, "dashboard.html", context)
 
 def create(request):
@@ -47,24 +49,25 @@ def create(request):
 def additem(request):
     if request.method != "POST":
         return redirect("/dashboard")
-    item = request.POST["item"]
-    if len(item) < 4:
+    wish = request.POST["wish"]
+    checkWish = request.POST["wish"]
+    if len(wish) < 4:
         messages.add_message(request, messages.ERROR, "Item must contain at least four characters.")
         return redirect("/create")
-        checkItem = Item.objects.filter(item__icontains = request.POST["item"]) 
-        newItem = Item.objects.create(item = request.POST["item"], user_id = User.objects.get(id = request.session["id"])) 
-        Wish.objects.create(item_id = newItem, user_id = User.objects.get(id = request.session["id"])) 
+        newWish = Wish.objects.create(wish = request.POST["wish"], created = User.objects.get(id = request.session["id"])) 
+        Wish.objects.create(name = newWish, created = User.objects.get(id = request.session["id"])) 
         return redirect("/dashboard")
-    if Wish.objects.filter(item_id = checkItem, user_id = request.session["id"]): 
+    if Wish.objects.filter(name = checkWish, created = request.session["id"]): 
         messages.add_message(request, messages.ERROR, "Item already on your wish list.")
         return redirect("/create")
-    Wish.objects.create(item_id = checkItem[0], user_id = User.objects.get(id = request.session["id"])) 
+    Wish.objects.create(name = checkWish, created = User.objects.get(id = request.session["id"])) 
     return redirect("/dashboard")
 
 def wishes(request, id):
     if "id" not in request.session:
         return redirect("/")
-    context = {"wishes": Wish.objects.all().filter(item_id = id)}
+    thiswish = Wish.objects.get(id = id)
+    context = {"wishes": Wish.objects.all().filter(id = id),'thiswish': thiswish }
     return render(request, "wishes.html", context)
 
 def logout(request):
@@ -75,23 +78,26 @@ def logout(request):
     return redirect("/")
 
 def removeitem(request, id):
-    if "id" not in request.session:
-        return redirect("/") 
-    Wish.objects.filter(user_id = request.session["id"], item_id = id).delete() 
+    # if "id" not in request.session:
+    user = User.objects.get(id = request.session["id"])
+    wish = Wish.objects.get(id = id )
+    wish.users_wishes.remove(user)
     return redirect("/dashboard")
 
 def deleteitem(request, id):
-    if "id" not in request.session or not Item.objects.filter(id = id) or Item.objects.filter(id = id)[0].user_id.id != request.session["id"]: 
+    if "id" not in request.session or not Wish.objects.filter(id = id) or Wish.objects.filter(id = id)[0].created.id != request.session["id"]: 
         return redirect("/")
-    Item.objects.filter(id = id).delete() 
+    Wish.objects.filter(id = id).delete() 
     return redirect("/dashboard")
 
 def addfromanother(request, id):
-    if "id" not in request.session or not Item.objects.filter(id = id):
+    if "id" not in request.session or not Wish.objects.filter(id = id):
         return redirect("/")
-    item = Item.objects.filter(id = id)[0] 
-    if Wish.objects.filter(item_id = id, user_id = request.session["id"]): 
+    wish = Wish.objects.filter(id = id)[0] 
+    if Wish.objects.filter(name = id, created = request.session["id"]): 
         messages.add_message(request, messages.ERROR, "Item already on your wish list.")
     else:
-        Wish.objects.create(item_id = item, user_id = User.objects.get(id = request.session["id"])) 
+        user = User.objects.get(id = request.session["id"])
+        wish.users_wishes.add(user)
+
     return redirect("/dashboard")
